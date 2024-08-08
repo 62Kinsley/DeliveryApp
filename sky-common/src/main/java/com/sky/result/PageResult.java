@@ -15,8 +15,8 @@ import java.util.List;
 @NoArgsConstructor
 public class PageResult implements Serializable {
 
-    private long total; //总记录数
+    private long total; //total record
 
-    private List records; //当前页数据集合
+    private List records; //data set of the current page
 
 }
