@@ -57,7 +57,6 @@ public class DishServiceImpl implements DishService {
         }
     }
 
-
     //dish page query
     public PageResult pageQuery(DishPageQueryDTO dishPageQueryDTO){
         PageHelper.startPage(dishPageQueryDTO.getPage(), dishPageQueryDTO.getPageSize());
@@ -65,7 +64,6 @@ public class DishServiceImpl implements DishService {
         return new PageResult(page.getTotal(),page.getResult());
 
     };
-
 
     @Transactional
     //dish deleteBatch
@@ -92,15 +90,53 @@ public class DishServiceImpl implements DishService {
 //        }
 
         //根据dishId batch delete data
-
         //delete from dish where id in (?,?,?)
         dishMapper.deleteByIds(ids);
         //delete from dish_flavor where dish_id in(?,?,?)
         dishFlavorMapper.deleteByDishIds(ids);
-
-
-
     }
+
+
+    //get dish by Id
+public  DishVO getByIdWithFlavor(Long id){
+
+    //get dish data by id
+    Dish dish = dishMapper.getById(id);
+
+    // get dish_flavor data by dish_id
+    List<DishFlavor> dishFlavors = dishFlavorMapper.getByDishId(id);
+
+    //To encapsulate the retrieved data into a dishVO (Value Object).
+    DishVO dishVO = new DishVO();
+    BeanUtils.copyProperties(dish, dishVO);
+    dishVO.setFlavors(dishFlavors);
+
+    //return the dishVO to controller
+    return dishVO;
+
+};
+
+    public void updateWithFlavor(DishDTO dishDTO){
+        //update dish
+        Dish dish = new Dish();
+        BeanUtils.copyProperties(dishDTO, dish);
+        dishMapper.update(dish);
+
+        //update dish_flavor 先删除原有的口味数据 重新插入口味数据
+        dishFlavorMapper.deleteByDishId(dishDTO.getId());
+        List<DishFlavor> flavors = dishDTO.getFlavors();
+        if (flavors != null && flavors.size() > 0){
+            flavors.forEach(dishFlavor -> {
+                dishFlavor.setDishId(dishDTO.getId());
+            });
+
+            dishFlavorMapper.insertBatch(flavors);
+        }
+
+
+
+    };
+
 
 
 }
