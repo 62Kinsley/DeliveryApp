@@ -13,3 +13,9 @@ sky:
     access-key-id:  LTAI5tPh1UQKZJgzMM5YFNF3
     access-key-secret: BoLij5aBNeBC3lO5zUGuz8cIucg4MY
     bucket-name: web-k-delivery
+
+
+  redis:
+    host: localhost
+    port: 6379
+    database: 0
